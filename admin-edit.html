@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Shipment Timeline | Aero Express Administrator</title>
+  <meta name="description" content="Edit consignment timeline, manage checkpoints, and update live tracking manifest.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260904-navifix">
+  <style>
+    /* Direct #0F2342 Dark Navy Theme Overrides */
+    .admin-section-card,
+    .admin-subnav-bar,
+    .settings-card {
+      background: #0F2342 !important;
+      background-color: #0F2342 !important;
+      border-color: #1D3A63 !important;
+    }
+    .admin-dashboard-body,
+    .admin-main {
+      background: #07101F !important;
+      background-color: #07101F !important;
+    }
+    .admin-secure-pill,
+    .security-badge-active {
+      background: #0F2342 !important;
+      background-color: #0F2342 !important;
+      color: #FFFFFF !important;
+      border: 1px solid #1D3A63 !important;
+    }
+    .admin-toast-banner {
+      background: #0F2342 !important;
+      background-color: #0F2342 !important;
+      border: 1px solid #1D3A63 !important;
+      border-left: 4px solid #D90429 !important;
+    }
+    .toast-icon {
+      background: #D90429 !important;
+      color: #FFFFFF !important;
+    }
+    @media (max-width: 768px) {
+      .admin-subnav-bar {
+        background: #0F2342 !important;
+        background-color: #0F2342 !important;
+        position: relative !important;
+        top: 0 !important;
+        border-bottom: 1px solid #1D3A63 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+      }
+      .admin-section-card {
+        background: #0F2342 !important;
+        background-color: #0F2342 !important;
+        padding: 1.25rem 1rem !important;
+        margin-bottom: 1.5rem !important;
+        border: 1px solid #1D3A63 !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+      }
+      .settings-card {
+        background: #0F2342 !important;
+        background-color: #0F2342 !important;
+        border: 1px solid #1D3A63 !important;
+      }
+    }
+  </style>
+</head>
+<body class="admin-dashboard-body">
+
+  <!-- Admin Auth Guard Script -->
+  <script>
+    if (sessionStorage.getItem('aero_admin_auth') !== 'true') {
+      window.location.href = 'admin-login.html';
+    }
+  </script>
+
+  <!-- Top Bar -->
+  <header class="admin-topbar">
+    <div class="container admin-topbar-inner">
+      <div class="admin-brand-group">
+        <a href="admin.html" class="brand-logo" title="Back to Admin Dashboard">
+          <div class="logo-mark">
+            <svg class="wing-icon" viewBox="0 0 44 28" fill="none">
+              <path d="M2 22L18 6L32 6L16 22H2Z" fill="#D90429" />
+              <path d="M14 22L28 6L42 6L28 22H14Z" fill="#EF233C" />
+              <path d="M26 22L36 12L42 12L32 22H26Z" fill="#FFFFFF" />
+            </svg>
+          </div>
+          <div class="logo-typography">
+            <span class="logo-name">AERO<span class="text-red">EXPRESS</span></span>
+            <span class="logo-sub">TIMELINE & MANIFEST EDITOR</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="admin-user-group">
+        <a href="admin.html" class="btn btn-outline-light btn-sm">
+          &larr; Back to Admin Dashboard
+        </a>
+        <a id="navLiveTrackBtn" href="#" target="_blank" class="btn btn-outline-light btn-sm">
+          View Public Tracking Page &nearr;
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Subnavigation Tabs Bar -->
+  <div class="admin-subnav-bar">
+    <div class="container">
+      <nav class="admin-nav-tabs">
+        <a href="admin.html" class="admin-nav-tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+          </svg>
+          Dispatch & Manifests
+        </a>
+        <a href="admin-settings.html" class="admin-nav-tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          Account Settings
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Notification Banner -->
+  <div class="container" style="margin-top: 1.5rem;">
+    <div id="saveToast" class="admin-toast-banner" style="display: none;">
+      <span class="toast-icon">&#10003;</span>
+      <div class="toast-body">
+        <strong id="toastSaveTitle">Timeline Successfully Updated!</strong>
+        <p id="toastSaveDesc">All checkpoint modifications are live and immediately visible to clients.</p>
+      </div>
+      <a id="toastSaveTrackLink" href="#" target="_blank" class="btn btn-xs btn-primary speed-btn">
+        <span>View Updated Tracking Page &nearr;</span>
+      </a>
+      <button class="toast-close-btn" onclick="document.getElementById('saveToast').style.display='none'">&times;</button>
+    </div>
+  </div>
+
+  <main class="admin-main">
+    <div class="container admin-container">
+
+      <!-- Loading State -->
+      <div id="editLoadingBox" class="details-loading-box text-center">
+        <div class="pulse-beacon" style="width:24px;height:24px;margin:2rem auto;"></div>
+        <p>Loading shipment manifest details...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="editErrorBox" class="details-error-box text-center" style="display: none;">
+        <div class="error-badge">CONSIGNMENT NOT FOUND</div>
+        <h2 class="error-title" id="editErrorTitle">Invalid Consignment Code</h2>
+        <p class="error-desc">We could not load this shipment record from the database. Please return to the dashboard.</p>
+        <a href="admin.html" class="btn btn-primary">Return to Admin Dashboard</a>
+      </div>
+
+      <!-- Main Editor Content Form -->
+      <form id="editShipmentForm" onsubmit="event.preventDefault(); saveShipmentChanges();" style="display: none;">
+
+        <!-- Shipment Overview Header Card -->
+        <section class="admin-section-card" style="margin-bottom: 2rem;">
+          <div class="card-title-bar">
+            <div>
+              <span class="section-badge"><span class="badge-red-slash">//</span> CONSIGNMENT DOSSIER</span>
+              <h1 class="admin-card-heading" id="editAwbHeader">AE-8849-DXB</h1>
+              <p class="admin-card-sub" id="editRouteSubtitle">Dubai (DXB) &rarr; Frankfurt (FRA)</p>
+            </div>
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+              <button type="submit" class="btn btn-primary btn-lg speed-btn">
+                <span>Save All Changes</span>
+                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Primary Controls Grid -->
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="editStatusSelect">Current Overall Status *</label>
+              <select id="editStatusSelect" class="form-select">
+                <option value="Order Processed">Order Processed</option>
+                <option value="Collected / In Transit">Collected / In Transit</option>
+                <option value="Airborne Flight Transit">Airborne Flight Transit</option>
+                <option value="Customs Clearance">Customs Clearance</option>
+                <option value="Arrived at Hub">Arrived at Hub</option>
+                <option value="Out for Delivery">Out for Delivery</option>
+                <option value="Delivered">Delivered</option>
+                <option value="On Hold / Exception">On Hold / Exception</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editLocationInput">Current Location *</label>
+              <input type="text" id="editLocationInput" class="form-control" placeholder="e.g. Frankfurt Cargo SuperHub Gate 14" required>
+            </div>
+          </div>
+
+          <div class="form-row-2" style="margin-top: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="editEtaInput">Estimated Delivery Window (ETA)</label>
+              <input type="text" id="editEtaInput" class="form-control" placeholder="e.g. Today, by 18:45 CET">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editTempInput">Telemetry - Cargo Bay Temperature</label>
+              <input type="text" id="editTempInput" class="form-control" placeholder="e.g. +4.2°C (Optimal)">
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: FULL TIMELINE & CHECKPOINTS CONTROLLER -->
+        <section class="admin-section-card">
+          <div class="card-title-bar">
+            <div>
+              <span class="section-badge"><span class="badge-red-slash">//</span> TIMELINE & MILESTONES</span>
+              <h2 class="admin-card-heading">Shipment Checkpoints Manager</h2>
+              <p class="admin-card-sub">
+                Edit existing checkpoints (name, location, timestamp, status), delete any mistake lines, or add completely new checkpoints below.
+              </p>
+            </div>
+          </div>
+
+          <!-- Dynamic Checkpoints List -->
+          <div class="checkpoints-table-wrap">
+            <div class="checkpoints-list" id="editCheckpointsList">
+              <!-- Dynamically populated -->
+            </div>
+
+            <!-- BUTTON AT VERY BOTTOM: + Add New Checkpoint -->
+            <div class="add-checkpoint-bottom-bar" style="margin-top: 1.5rem; text-align: center;">
+              <button type="button" class="btn btn-outline-light btn-block add-checkpoint-btn" onclick="addNewBlankCheckpoint()" style="padding: 1rem; font-size: 0.95rem; border: 2px dashed var(--border-navy);">
+                + Add New Checkpoint
+              </button>
+            </div>
+          </div>
+
+          <!-- Save Row -->
+          <div class="form-submit-row" style="margin-top: 2.5rem; justify-content: flex-end; gap: 1rem;">
+            <a href="admin.html" class="btn btn-outline-light btn-lg">
+              Cancel
+            </a>
+            <button type="submit" class="btn btn-primary btn-lg speed-btn">
+              <span>Save All Changes & Update Live Manifest</span>
+              <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </section>
+
+      </form>
+
+    </div>
+  </main>
+
+  <!-- Supabase Cloud Database SDK & Integration -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const trackingCode = (urlParams.get('code') || '').trim().toUpperCase();
+
+    let currentShipment = null;
+    let currentRoutes = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!trackingCode) {
+        showError('No Consignment Code Provided');
+        return;
+      }
+      loadShipmentForEdit(trackingCode);
+    });
+
+    async function loadShipmentForEdit(code) {
+      try {
+        currentShipment = await AeroDB.getShipment(code);
+        if (currentShipment) {
+          initEditorForm(currentShipment);
+          return;
+        }
+      } catch (err) {
+        console.warn('AeroDB load notice:', err);
+      }
+
+      showError(`Consignment "${code}" Not Found`);
+    }
+
+    function initEditorForm(s) {
+      document.getElementById('editLoadingBox').style.display = 'none';
+      document.getElementById('editErrorBox').style.display = 'none';
+      document.getElementById('editShipmentForm').style.display = 'block';
+
+      // Header info
+      document.getElementById('editAwbHeader').textContent = s.code;
+      document.getElementById('editRouteSubtitle').textContent = `${s.origin || 'Origin'} → ${s.destination || 'Destination'} • Service: ${s.serviceType || 'Priority Air'}`;
+
+      // Navigation links
+      const liveBtn = document.getElementById('navLiveTrackBtn');
+      liveBtn.href = `tracking-details.html?code=${encodeURIComponent(s.code)}`;
+
+      // Fields
+      document.getElementById('editStatusSelect').value = s.status || 'Collected / In Transit';
+      document.getElementById('editLocationInput').value = s.currentLocation || '';
+      document.getElementById('editEtaInput').value = s.eta || '';
+      document.getElementById('editTempInput').value = s.telemetry?.temp || '+4.2°C (Optimal)';
+
+      // Checkpoints
+      currentRoutes = (s.routes && Array.isArray(s.routes)) ? JSON.parse(JSON.stringify(s.routes)) : [];
+      renderCheckpointsList();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // Add completely new, blank line below current ones
+    function addNewBlankCheckpoint() {
+      const now = new Date();
+      const timeStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ' • ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' Local';
+      
+      currentRoutes.push({
+        name: '',
+        location: '',
+        time: timeStr,
+        status: 'pending',
+        desc: '',
+        isCustom: true
+      });
+      renderCheckpointsList();
+    }
+
+    function removeCheckpoint(index) {
+      currentRoutes.splice(index, 1);
+      renderCheckpointsList();
+    }
+
+    function updateCheckpointField(index, field, value) {
+      if (currentRoutes[index]) {
+        currentRoutes[index][field] = value;
+      }
+    }
+
+    function renderCheckpointsList() {
+      const container = document.getElementById('editCheckpointsList');
+      if (!container) return;
+
+      if (currentRoutes.length === 0) {
+        container.innerHTML = '<p class="text-dim" style="padding: 1.5rem; text-align: center;">No checkpoints currently in timeline. Click "+ Add New Checkpoint" below to add a milestone.</p>';
+        return;
+      }
+
+      container.innerHTML = currentRoutes.map((r, index) => {
+        return `
+          <div class="checkpoint-editable-row ${r.isCustom ? 'custom-checkpoint' : ''}">
+            <div class="cp-row-header">
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <span class="cp-row-index">Checkpoint #${index + 1}</span>
+                ${r.isCustom ? '<span class="custom-tag">CUSTOM LINE</span>' : '<span class="standard-tag">STANDARD ROUTE</span>'}
+              </div>
+              <button type="button" class="cp-del-btn" onclick="removeCheckpoint(${index})" title="Delete this checkpoint">&times;</button>
+            </div>
+            
+            <div class="cp-inputs-grid">
+              <div class="cp-input-group">
+                <label class="cp-input-label">Checkpoint Name *</label>
+                <input 
+                  type="text" 
+                  class="form-control form-control-sm cp-field" 
+                  value="${escapeHtml(r.name || '')}" 
+                  placeholder="e.g. Arrived at Local Post Office..." 
+                  oninput="updateCheckpointField(${index}, 'name', this.value)"
+                  required
+                >
+              </div>
+
+              <div class="cp-input-group">
+                <label class="cp-input-label">Location / Gateway *</label>
+                <input 
+                  type="text" 
+                  class="form-control form-control-sm cp-field" 
+                  value="${escapeHtml(r.location || '')}" 
+                  placeholder="e.g. Dallas Metro Distribution Center" 
+                  oninput="updateCheckpointField(${index}, 'location', this.value)"
+                  required
+                >
+              </div>
+
+              <div class="cp-input-group">
+                <label class="cp-input-label">Timestamp</label>
+                <input 
+                  type="text" 
+                  class="form-control form-control-sm cp-field" 
+                  value="${escapeHtml(r.time || '')}" 
+                  placeholder="e.g. 04 Sep • 14:30 CST" 
+                  oninput="updateCheckpointField(${index}, 'time', this.value)"
+                >
+              </div>
+
+              <div class="cp-input-group">
+                <label class="cp-input-label">Status</label>
+                <select class="form-select form-select-sm cp-status-select" onchange="updateCheckpointField(${index}, 'status', this.value)">
+                  <option value="completed" ${r.status === 'completed' ? 'selected' : ''}>&#10003; Completed</option>
+                  <option value="active" ${r.status === 'active' ? 'selected' : ''}>&bull; Active Now</option>
+                  <option value="pending" ${r.status === 'pending' ? 'selected' : ''}>- Pending</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="cp-desc-group" style="margin-top: 0.6rem;">
+              <label class="cp-input-label">Description / Custody Event</label>
+              <input 
+                type="text" 
+                class="form-control form-control-sm cp-field" 
+                value="${escapeHtml(r.desc || '')}" 
+                placeholder="Description (e.g. Package arrived at regional sorting facility, loaded into outbound van)..." 
+                oninput="updateCheckpointField(${index}, 'desc', this.value)"
+              >
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function saveShipmentChanges() {
+      if (!currentShipment) return;
+
+      currentShipment.status = document.getElementById('editStatusSelect').value;
+      currentShipment.currentLocation = document.getElementById('editLocationInput').value.trim();
+      currentShipment.eta = document.getElementById('editEtaInput').value.trim();
+      if (!currentShipment.telemetry) currentShipment.telemetry = {};
+      currentShipment.telemetry.temp = document.getElementById('editTempInput').value.trim();
+      currentShipment.routes = currentRoutes;
+
+      // 1. Permanently update in Supabase Cloud Database & LocalStorage
+      let savedStorage = 'local';
+      try {
+        const dbResult = await AeroDB.saveShipment(currentShipment);
+        if (dbResult && dbResult.storage === 'supabase') {
+          savedStorage = 'supabase';
+        }
+      } catch (err) {
+        console.warn('AeroDB save notice:', err);
+      }
+
+      // 2. Secondary dispatch to local server if active
+      try {
+        fetch('/api/shipments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(currentShipment)
+        }).catch(() => {});
+      } catch (err) {}
+
+      // 3. Show Toast
+      const toast = document.getElementById('saveToast');
+      document.getElementById('toastSaveTitle').textContent = (savedStorage === 'supabase')
+        ? `Shipment ${currentShipment.code} Updated in Supabase Cloud!`
+        : `Shipment ${currentShipment.code} Saved!`;
+      document.getElementById('toastSaveDesc').textContent = `Timeline updated with ${currentRoutes.length} checkpoint(s). Status: ${currentShipment.status}.`;
+      const toastLink = document.getElementById('toastSaveTrackLink');
+      toastLink.href = `tracking-details.html?code=${encodeURIComponent(currentShipment.code)}`;
+      toast.style.display = 'flex';
+      toast.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function showError(msg) {
+      document.getElementById('editLoadingBox').style.display = 'none';
+      document.getElementById('editShipmentForm').style.display = 'none';
+      const errorBox = document.getElementById('editErrorBox');
+      errorBox.style.display = 'block';
+      document.getElementById('editErrorTitle').textContent = msg;
+    }
+  </script>
+</body>
+</html>

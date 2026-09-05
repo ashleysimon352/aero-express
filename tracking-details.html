@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipment Details | Aero Express Telematics</title>
+  <meta name="description" content="Detailed consignment manifest, route checkpoints, telemetry, and package imagery.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="tracking-details-body">
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo" aria-label="Aero Express Home">
+        <div class="logo-mark">
+          <svg class="wing-icon" viewBox="0 0 44 28" fill="none">
+            <path d="M2 22L18 6L32 6L16 22H2Z" fill="#D90429" />
+            <path d="M14 22L28 6L42 6L28 22H14Z" fill="#EF233C" />
+            <path d="M26 22L36 12L42 12L32 22H26Z" fill="#FFFFFF" />
+          </svg>
+        </div>
+        <div class="logo-typography">
+          <span class="logo-name">AERO<span class="text-red">EXPRESS</span></span>
+          <span class="logo-sub">GLOBAL COURIER & FREIGHT</span>
+        </div>
+      </a>
+
+      <div class="header-cta-group">
+        <a href="track.html" class="btn btn-outline-light btn-sm">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Track Another Package
+        </a>
+        <a href="index.html" class="btn btn-primary speed-btn btn-sm">
+          <span>Home</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="tracking-details-main">
+    <div class="container">
+
+      <!-- Breadcrumb & Top Bar -->
+      <div class="details-nav-row">
+        <div class="breadcrumb">
+          <a href="index.html">Home</a>
+          <span class="sep">&rsaquo;</span>
+          <a href="track.html">Track</a>
+          <span class="sep">&rsaquo;</span>
+          <span class="current" id="breadcrumbAwb">Loading...</span>
+        </div>
+        <div class="action-buttons-top">
+          <button class="btn btn-xs btn-outline-light" onclick="window.print()">
+            <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print Manifest
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading Spinner Container -->
+      <div id="loadingBox" class="details-loading-box text-center">
+        <div class="pulse-beacon" style="width:24px;height:24px;margin:2rem auto;"></div>
+        <p>Connecting to Aero Global Telematics Database...</p>
+      </div>
+
+      <!-- Error Box if Consignment Not Found -->
+      <div id="errorBox" class="details-error-box text-center" style="display: none;">
+        <div class="error-badge">CONSIGNMENT NOT FOUND</div>
+        <h2 class="error-title" id="errorCodeDisplay">AWB Code Unregistered</h2>
+        <p class="error-desc">We could not locate this Airway Bill in our active manifest database. Please verify the code or enter a new tracking number.</p>
+        <div class="error-actions">
+          <a href="track.html" class="btn btn-primary">Go to Track Page</a>
+        </div>
+      </div>
+
+      <!-- Main Results Content Grid -->
+      <div id="contentGrid" class="details-content-grid" style="display: none;">
+        
+        <!-- Top Status Banner -->
+        <section class="manifest-banner-card">
+          <div class="banner-main-col">
+            <span class="banner-sub-tag">OFFICIAL AIRWAY BILL MANIFEST</span>
+            <h1 class="banner-awb-title" id="awbTitle">AE-8849-DXB</h1>
+            <div class="banner-package-badge" style="margin: 0.35rem 0 0.5rem 0;">
+              <span style="font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); display: block;">PACKAGE:</span>
+              <strong id="displayPackageName" style="font-size: 1.15rem; color: #38BDF8; font-weight: 700;">Loading...</strong>
+            </div>
+            <div class="banner-route-tag">
+              <span id="routeOrigin">Dubai (DXB)</span>
+              <span class="route-arrow-icon">&rarr;</span>
+              <span id="routeDest">Frankfurt (FRA)</span>
+            </div>
+          </div>
+          <div class="banner-status-col text-right">
+            <div class="status-pill in-flight" id="statusPill">
+              <span class="live-dot-green"></span>
+              <span id="statusText">IN TRANSIT</span>
+            </div>
+            <div class="current-loc-box">
+              <span class="loc-label">CURRENT LOCATION:</span>
+              <span class="loc-value" id="currentLocationText">Airborne Transit • Red Sea-Alpine Flight Corridor</span>
+            </div>
+            <div class="eta-box">
+              <span class="eta-label">ESTIMATED DELIVERY:</span>
+              <span class="eta-value" id="etaText">Today, 18:45 CET</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2-Column Split: Package Picture & Dossier -->
+        <div class="details-split-row">
+          
+          <!-- LEFT: Verified Package Picture & Inspection Card -->
+          <div class="package-picture-card">
+            <div class="card-inner-header">
+              <span class="header-tag">VISUAL MANIFEST INSPECTION</span>
+              <span class="crypto-seal-pill">&#128274; Biometrically Verified</span>
+            </div>
+            <div class="package-img-viewport" id="packageImgContainer">
+              <img id="packageImage" src="" alt="Aero Express Consignment Package" class="package-img-fluid">
+            </div>
+            <div class="package-meta-bar">
+              <div class="meta-item">
+                <span class="lbl">Package Name</span>
+                <span class="val text-white" id="metaPackageName" style="color: #FFFFFF !important; font-weight: 600;">Loading...</span>
+              </div>
+              <div class="meta-item">
+                <span class="lbl">Consignment Class</span>
+                <span class="val" id="serviceClassText">Aero Next-Flight-Out (NFO)</span>
+              </div>
+              <div class="meta-item">
+                <span class="lbl">Visual Inspection</span>
+                <span class="val text-green">&#10003; Intact / Sealed</span>
+              </div>
+              <div class="meta-item">
+                <span class="lbl">Audit Timestamp</span>
+                <span class="val" id="createdAtText">04 Sep 2026</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Sender and Receiver Dossier Cards -->
+          <div class="party-dossier-card">
+            <div class="card-inner-header">
+              <span class="header-tag">CHAIN OF CUSTODY PARTIES</span>
+              <span class="crypto-seal-pill">ISO 9001 Compliant</span>
+            </div>
+
+            <!-- Sender Box -->
+            <div class="party-box sender-box">
+              <div class="party-icon-tag">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 12l-4-4-4 4M12 16V8"/></svg>
+                <span>SHIPPER / SENDER</span>
+              </div>
+              <h3 class="party-name" id="senderName">Emirates Aerospace Technologies</h3>
+              <p class="party-address" id="senderAddress">Gate 5, Dubai South Aerospace District, UAE</p>
+              <div class="party-port">
+                <span class="port-label">Origin Gateway:</span>
+                <strong id="senderOrigin">Dubai (DXB)</strong>
+              </div>
+            </div>
+
+            <!-- Arrow Divider -->
+            <div class="party-divider">
+              <span class="divider-line"></span>
+              <span class="divider-badge">PRIORITY AIR TRANSIT</span>
+              <span class="divider-line"></span>
+            </div>
+
+            <!-- Receiver Box -->
+            <div class="party-box receiver-box">
+              <div class="party-icon-tag receiver">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l4 4 4-4M12 8v8"/></svg>
+                <span>CONSIGNEE / RECEIVER</span>
+              </div>
+              <h3 class="party-name" id="receiverName">Lufthansa Flight Maintenance Group</h3>
+              <p class="party-address" id="receiverAddress">Hangar 12, Frankfurt SuperHub (FRA), Germany</p>
+              <div class="party-port">
+                <span class="port-label">Final Destination Port:</span>
+                <strong id="receiverDest">Frankfurt (FRA)</strong>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Telematics Sensors Row -->
+        <section class="telemetry-bar-card">
+          <div class="sensor-readout-row" style="margin: 0;">
+            <div class="sensor-pill">
+              <span class="sensor-icon">🌡️</span>
+              <div class="sensor-info">
+                <span class="sensor-name">Cargo Bay Temp</span>
+                <span class="sensor-data" id="detSensorTemp">+4.2°C (Optimal Range)</span>
+              </div>
+            </div>
+            <div class="sensor-pill">
+              <span class="sensor-icon">🛡️</span>
+              <div class="sensor-info">
+                <span class="sensor-name">Security Seal</span>
+                <span class="sensor-data" id="detSensorSeal">Biometric Crypt-Lock [VERIFIED]</span>
+              </div>
+            </div>
+            <div class="sensor-pill">
+              <span class="sensor-icon">📡</span>
+              <div class="sensor-info">
+                <span class="sensor-name">Telemetry Signal</span>
+                <span class="sensor-data" id="detSensorGps">Iridium Satellite GPS [99.8% Sync]</span>
+              </div>
+            </div>
+            <div class="sensor-pill">
+              <span class="sensor-icon">⚖️</span>
+              <div class="sensor-info">
+                <span class="sensor-name">Impact / G-Force</span>
+                <span class="sensor-data" id="detSensorGforce">0.12 G (Zero Anomaly)</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Dynamic Timeline & Generated Checkpoints -->
+        <section class="timeline-section-card">
+          <div class="timeline-header-group">
+            <div>
+              <span class="section-badge"><span class="badge-red-slash">//</span> TRANSIT ROUTE & MILESTONES</span>
+              <h2 class="timeline-main-heading">Verified Route Checkpoints</h2>
+              <p class="timeline-sub-text">Includes origin collection, customs border clearance, transit flight gateways, and custom destination stopovers.</p>
+            </div>
+            <span class="live-beacon-wrap">
+              <span class="live-dot-green"></span>
+              LIVE FLIGHT RADAR
+            </span>
+          </div>
+
+          <div class="timeline-stepper" id="dynamicTimelineList">
+            <!-- Dynamically populated from backend / routes array -->
+          </div>
+        </section>
+
+        <!-- Bottom Action Bar -->
+        <div class="details-bottom-actions">
+          <a href="track.html" class="btn btn-outline-light">
+            &larr; Track Another Consignment
+          </a>
+          <button class="btn btn-primary speed-btn" onclick="alert('Digital e-Waybill generated with SHA-256 verification. Printing dialog launched.')">
+            <span>Download Official e-Waybill</span>
+            <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer with Discreet Admin Link -->
+  <footer class="track-minimal-footer">
+    <div class="container footer-bottom-inner">
+      <p class="copy-text">
+        &copy; 2026 Aero Express International Logistics Group S.A.
+      </p>
+      <div class="footer-legal-links">
+        <a href="index.html">Home</a>
+        <a href="track.html">Track</a>
+        <a href="index.html#services">Services</a>
+        <a href="admin-login.html" class="admin-discreet-link" title="Authorized Operations Access">Administrator Block</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Supabase Cloud Database Integration -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script src="app.js"></script>
+  <script src="tracking-details.js"></script>
+  <script>
+    // Extract query parameter ?code=...
+    const urlParams = new URLSearchParams(window.location.search);
+    const trackingCode = (urlParams.get('code') || '').trim().toUpperCase();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!trackingCode) {
+        showError('No Tracking Code Provided');
+        return;
+      }
+      document.getElementById('breadcrumbAwb').textContent = trackingCode;
+      fetchShipmentDetails(trackingCode);
+    });
+
+    async function fetchShipmentDetails(code) {
+      const loadingBox = document.getElementById('loadingBox');
+      const contentGrid = document.getElementById('contentGrid');
+      const errorBox = document.getElementById('errorBox');
+
+      // 1. Check Supabase Cloud Database & LocalStorage via AeroDB
+      try {
+        const shipment = await AeroDB.getShipment(code);
+        if (shipment) {
+          renderDetails(shipment);
+          return;
+        }
+      } catch (err) {
+        console.warn('AeroDB query error, checking secondary sources...', err);
+      }
+
+      // 2. Secondary check backend API if running
+      try {
+        const res = await fetch(`/api/shipments/${encodeURIComponent(code)}`);
+        if (res.ok) {
+          const data = await res.json();
+          renderDetails(data);
+          return;
+        }
+      } catch (e) {}
+
+      // 3. Check TRACKING_DB if available
+      if (typeof TRACKING_DB !== 'undefined' && TRACKING_DB[code]) {
+        const demo = TRACKING_DB[code];
+        const converted = {
+          code: demo.awb,
+          origin: demo.originCity || 'Dubai Intl',
+          destination: demo.destCity || 'Frankfurt Main',
+          status: demo.statusText || 'In Transit',
+          currentLocation: demo.route || 'Airborne Transit',
+          eta: demo.eta || 'Today, 18:45 CET',
+          serviceType: demo.title || 'Aero Priority Air',
+          createdAt: '04 Sep 2026',
+          senderName: 'Authorized Aero Logistics Shipper',
+          senderAddress: 'Origin Airport Mega Hub',
+          receiverName: 'Authorized Enterprise Consignee',
+          receiverAddress: 'Destination Cargo Terminal',
+          telemetry: {
+            temp: demo.temp || '+4.2°C (Optimal)',
+            seal: demo.seal || 'Biometric Crypt-Lock [VERIFIED]',
+            gps: demo.gps || 'Iridium Satellite GPS [99.8% Sync]',
+            gforce: demo.gforce || '0.12 G (Normal)'
+          },
+          routes: (demo.milestones || []).map(m => ({
+            name: m.title,
+            location: m.loc,
+            status: m.status === 'completed' ? 'completed' : (m.status === 'active' ? 'active' : 'pending'),
+            time: m.time,
+            desc: m.desc
+          }))
+        };
+        renderDetails(converted);
+        return;
+      }
+
+      showError(code);
+    }
+
+    function renderDetails(data) {
+      document.getElementById('loadingBox').style.display = 'none';
+      document.getElementById('errorBox').style.display = 'none';
+      document.getElementById('contentGrid').style.display = 'block';
+
+      // Extract payload and package_name
+      let payload = data.payload || {};
+      if (typeof payload === 'string') {
+        try { payload = JSON.parse(payload); } catch (e) { payload = {}; }
+      }
+      const packageName = (
+        payload.package_name ||
+        payload.packageName ||
+        data.package_name ||
+        data.packageName ||
+        payload.title ||
+        data.title ||
+        payload.serviceType ||
+        data.serviceType ||
+        'Priority Consignment'
+      );
+
+      // Display Package Name in Manifest Banner & Inspection Card
+      const displayPkg = document.getElementById('displayPackageName');
+      if (displayPkg) displayPkg.textContent = packageName;
+
+      const metaPkg = document.getElementById('metaPackageName');
+      if (metaPkg) metaPkg.textContent = packageName;
+
+      const pkgEl = document.getElementById('packageName');
+      if (pkgEl) pkgEl.textContent = packageName;
+
+      // Header Banner
+      document.getElementById('awbTitle').textContent = packageName && packageName !== data.code
+        ? `${data.code} — ${packageName}`
+        : data.code;
+      document.getElementById('breadcrumbAwb').textContent = data.code;
+      document.getElementById('routeOrigin').textContent = data.origin || payload.origin || 'Origin Gateway';
+      document.getElementById('routeDest').textContent = data.destination || payload.destination || 'Destination Hub';
+
+      // Status
+      const statusText = data.status || payload.status || 'In Transit';
+      document.getElementById('statusText').textContent = statusText.toUpperCase();
+      document.getElementById('currentLocationText').textContent = data.currentLocation || payload.currentLocation || 'In Transit';
+      document.getElementById('etaText').textContent = data.eta || payload.eta || 'Today, 18:45 CET';
+
+      // Package Picture
+      const imgElem = document.getElementById('packageImage');
+      const pic = data.picture || payload.picture;
+      if (pic) {
+        imgElem.src = pic;
+      } else {
+        // Default SVG Fallback
+        imgElem.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300' width='100%25' height='100%25'%3E%3Crect width='400' height='300' fill='%230B192F'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='%23E2E8F0' font-family='Arial' font-size='16'%3EAERO EXPRESS CONSIGNMENT%3C/text%3E%3C/svg%3E";
+      }
+
+      const serviceType = data.serviceType || payload.serviceType || 'Aero Priority Air Express';
+      document.getElementById('serviceClassText').textContent = packageName && packageName !== serviceType
+        ? `${packageName} (${serviceType})`
+        : serviceType;
+      document.getElementById('createdAtText').textContent = data.createdAt || payload.createdAt || '04 Sep 2026';
+
+      // Parties
+      document.getElementById('senderName').textContent = data.sender_name || data.senderName || payload.senderName || payload.sender_name || payload.sender || 'Authorized Aero Shipper';
+      document.getElementById('senderAddress').textContent = data.sender_address || data.senderAddress || payload.senderAddress || payload.sender_address || 'Origin Logistics Center';
+      document.getElementById('senderOrigin').textContent = data.origin || payload.origin || 'Origin';
+
+      document.getElementById('receiverName').textContent = data.receiver_name || data.receiverName || payload.receiverName || payload.receiver_name || payload.receiver || 'Consignee Enterprise';
+      document.getElementById('receiverAddress').textContent = data.receiver_address || data.receiverAddress || payload.receiverAddress || payload.receiver_address || 'Destination Receiving Dock';
+      document.getElementById('receiverDest').textContent = data.destination || payload.destination || 'Destination';
+
+      // Telemetry
+      const tel = data.telemetry || payload.telemetry || {};
+      document.getElementById('detSensorTemp').textContent = tel.temp || '+4.2°C (Optimal Range)';
+      document.getElementById('detSensorSeal').textContent = tel.seal || 'Biometric Crypt-Lock [VERIFIED]';
+      document.getElementById('detSensorGps').textContent = tel.gps || 'Iridium Satellite GPS [99.8% Sync]';
+      document.getElementById('detSensorGforce').textContent = tel.gforce || '0.12 G (Zero Anomaly)';
+
+      // Render Checkpoints / Timeline
+      renderCheckpoints(data.routes || payload.routes || []);
+    }
+
+    function renderCheckpoints(routes) {
+      const timelineElem = document.getElementById('dynamicTimelineList');
+      if (!timelineElem) return;
+
+      if (!routes || routes.length === 0) {
+        timelineElem.innerHTML = '<p class="text-dim">No route checkpoints logged for this consignment yet.</p>';
+        return;
+      }
+
+      timelineElem.innerHTML = routes.map((r, index) => {
+        const status = (r.status || 'pending').toLowerCase();
+        let iconHtml = '<span class="step-dot"></span>';
+        let headingClass = 'step-heading';
+
+        if (status === 'completed') {
+          iconHtml = '<span class="step-check">&#10003;</span>';
+        } else if (status === 'active') {
+          iconHtml = '<span class="pulse-beacon"></span>';
+          headingClass = 'step-heading text-red';
+        }
+
+        return `
+          <div class="timeline-step ${status}">
+            <div class="step-indicator">
+              ${iconHtml}
+            </div>
+            <div class="step-content">
+              <div class="step-time">${r.time || 'Checkpoint #' + (index + 1)}</div>
+              <h4 class="${headingClass}">${r.name || 'Checkpoint Milestone'}</h4>
+              <p class="step-desc">${r.desc || ('Waypoint processing at ' + (r.location || 'Hub'))}</p>
+              <span class="step-loc">${r.location || 'Gateway Terminal'}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function showError(code) {
+      document.getElementById('loadingBox').style.display = 'none';
+      document.getElementById('contentGrid').style.display = 'none';
+      const errorBox = document.getElementById('errorBox');
+      errorBox.style.display = 'block';
+      document.getElementById('errorCodeDisplay').textContent = `Consignment "${code}" Not Found`;
+    }
+  </script>
+</body>
+</html>

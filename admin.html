@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operations Dashboard | Aero Express Administrator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260904-navifix">
+  <style>
+    /* Direct #0F2342 Dark Navy Theme Overrides */
+    .admin-section-card,
+    .admin-subnav-bar,
+    .settings-card {
+      background: #0F2342 !important;
+      background-color: #0F2342 !important;
+      border-color: #1D3A63 !important;
+    }
+    .admin-dashboard-body,
+    .admin-main {
+      background: #07101F !important;
+      background-color: #07101F !important;
+    }
+    .admin-secure-pill,
+    .security-badge-active {
+      background: #0F2342 !important;
+      background-color: #0F2342 !important;
+      color: #FFFFFF !important;
+      border: 1px solid #1D3A63 !important;
+    }
+    .admin-toast-banner {
+      background: #0F2342 !important;
+      background-color: #0F2342 !important;
+      border: 1px solid #1D3A63 !important;
+      border-left: 4px solid #D90429 !important;
+    }
+    .toast-icon {
+      background: #D90429 !important;
+      color: #FFFFFF !important;
+    }
+    @media (max-width: 768px) {
+      .admin-subnav-bar {
+        background: #0F2342 !important;
+        background-color: #0F2342 !important;
+        position: relative !important;
+        top: 0 !important;
+        border-bottom: 1px solid #1D3A63 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+      }
+      .admin-section-card {
+        background: #0F2342 !important;
+        background-color: #0F2342 !important;
+        padding: 1.25rem 1rem !important;
+        margin-bottom: 1.5rem !important;
+        border: 1px solid #1D3A63 !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+      }
+      .settings-card {
+        background: #0F2342 !important;
+        background-color: #0F2342 !important;
+        border: 1px solid #1D3A63 !important;
+      }
+    }
+  </style>
+</head>
+<body class="admin-dashboard-body">
+
+  <!-- Admin Auth Guard Script -->
+  <script>
+    if (sessionStorage.getItem('aero_admin_auth') !== 'true') {
+      window.location.href = 'admin-login.html';
+    }
+  </script>
+
+  <!-- Admin Top Bar -->
+  <header class="admin-topbar">
+    <div class="container admin-topbar-inner">
+      <div class="admin-brand-group">
+        <a href="index.html" class="brand-logo" title="View Public Landing Page">
+          <div class="logo-mark">
+            <svg class="wing-icon" viewBox="0 0 44 28" fill="none">
+              <path d="M2 22L18 6L32 6L16 22H2Z" fill="#D90429" />
+              <path d="M14 22L28 6L42 6L28 22H14Z" fill="#EF233C" />
+              <path d="M26 22L36 12L42 12L32 22H26Z" fill="#FFFFFF" />
+            </svg>
+          </div>
+          <div class="logo-typography">
+            <span class="logo-name">AERO<span class="text-red">EXPRESS</span></span>
+            <span class="logo-sub">OPERATIONS DISPATCH CONSOLE</span>
+          </div>
+        </a>
+        <span class="admin-secure-pill">
+          <span class="pulse-dot"></span>
+          OPERATIONAL INGRESS ACTIVE
+        </span>
+      </div>
+
+      <div class="admin-user-group">
+        <div class="admin-profile-badge">
+          <span class="avatar-icon">&#128100;</span>
+          <div>
+            <strong id="adminUserDisplay">Operations Dispatcher</strong>
+            <span class="admin-role-tag">Global Flight Dispatcher</span>
+          </div>
+        </div>
+        <a href="index.html" target="_blank" class="btn btn-outline-light btn-sm" title="Open Public Website in New Tab">
+          View Public Site &nearr;
+        </a>
+        <button class="btn btn-outline-light btn-sm" onclick="handleLogout()" title="Terminate Admin Session">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Subnavigation Tabs Bar -->
+  <div class="admin-subnav-bar">
+    <div class="container">
+      <nav class="admin-nav-tabs">
+        <a href="admin.html" class="admin-nav-tab active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+          </svg>
+          Dispatch & Manifests
+        </a>
+        <a href="admin-settings.html" class="admin-nav-tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          Account Settings
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Notification Banner -->
+  <div class="container" style="margin-top: 1.5rem;">
+    <div id="actionToast" class="admin-toast-banner" style="display: none;">
+      <span class="toast-icon">&#10003;</span>
+      <div class="toast-body">
+        <strong id="toastTitle">Shipment Successfully Saved</strong>
+        <p id="toastDesc">Manifest registered into Aero Global Telematics engine.</p>
+      </div>
+      <a id="toastTrackLink" href="#" target="_blank" class="btn btn-xs btn-primary speed-btn">
+        <span>View Live Tracking Page &nearr;</span>
+      </a>
+      <button class="toast-close-btn" onclick="document.getElementById('actionToast').style.display='none'">&times;</button>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="admin-main">
+    <div class="container admin-container">
+
+      <!-- SECTION 1: ADD NEW SHIPMENT FORM -->
+      <section class="admin-section-card">
+        <div class="card-title-bar">
+          <div>
+            <span class="section-badge"><span class="badge-red-slash">//</span> DISPATCH CONTROLLER</span>
+            <h2 class="admin-card-heading">Add New Shipment Manifest</h2>
+            <p class="admin-card-sub">Generate a new consignment record, upload verified package imagery, and configure dynamic route checkpoints.</p>
+          </div>
+          <button type="button" class="btn btn-outline-light btn-sm" onclick="autoPopulateFormDemo()">
+            Fill Sample Data
+          </button>
+        </div>
+
+        <form id="newShipmentForm" onsubmit="event.preventDefault(); submitNewShipment();">
+          
+          <!-- Row 1: Tracking Code & Package Name -->
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="shipmentCode">
+                Tracking Code / Airway Bill (AWB) *
+              </label>
+              <div class="search-input-group">
+                <input 
+                  type="text" 
+                  id="shipmentCode" 
+                  class="form-control font-mono" 
+                  placeholder="e.g. AE-7281-SFO" 
+                  required
+                >
+                <button type="button" class="btn btn-outline-light btn-sm" onclick="generateTrackingCode()">
+                  Auto-Generate
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="packageName">
+                Package Name *
+              </label>
+              <input 
+                type="text" 
+                id="packageName" 
+                class="form-control" 
+                placeholder="e.g., Cargo Box, Electronics, Documents" 
+                required
+              >
+            </div>
+          </div>
+
+          <!-- Service Level -->
+          <div class="form-group" style="margin-top: 1rem;">
+            <label class="form-label" for="serviceType">Service Classification</label>
+            <select id="serviceType" class="form-select">
+              <option value="Aero Next-Flight-Out (Priority Air)" selected>Aero Next-Flight-Out (Priority Air)</option>
+              <option value="Aero Vault™ Cold-Chain Biologics">Aero Vault™ Cold-Chain Biologics</option>
+              <option value="Aero High-Security Semiconductor Express">Aero High-Security Semiconductor Express</option>
+              <option value="Aero Multimodal Heavy Cargo">Aero Multimodal Heavy Cargo</option>
+              <option value="Aero Sovereign Diplomatic Courier">Aero Sovereign Diplomatic Courier</option>
+            </select>
+          </div>
+
+          <!-- Row 2: Package Picture Upload & Live Preview -->
+          <div class="form-group" style="margin-top: 1rem;">
+            <label class="form-label">Package Picture Upload *</label>
+            <div class="picture-upload-container">
+              <div class="upload-dropzone" id="uploadDropzone">
+                <input type="file" id="packagePicFile" accept="image/*" class="file-input-hidden" onchange="handleImageFileSelect(event)">
+                <div class="dropzone-prompt">
+                  <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:36px;height:36px;color:var(--red-bright);margin-bottom:0.5rem;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <strong>Click or Drag & Drop Package Photo Here</strong>
+                  <span>Supports PNG, JPG, WEBP, or SVG</span>
+                </div>
+              </div>
+
+              <!-- Live Preview Box -->
+              <div class="upload-preview-box">
+                <div class="preview-label">LIVE PACKAGE PREVIEW</div>
+                <div class="preview-img-frame" id="previewImgFrame">
+                  <img id="packagePreviewImg" src="" alt="Package Preview" style="display: none;">
+                  <div id="noPreviewText" class="no-preview-placeholder">No photo uploaded yet</div>
+                </div>
+                <div class="preset-picture-select">
+                  <label class="form-label" style="font-size: 0.7rem; margin-bottom: 0.2rem;">Or choose preset packaging photo:</label>
+                  <select id="presetPhotoSelect" class="form-select" onchange="applyPresetPhoto(this.value)">
+                    <option value="">-- Choose Preset Graphic --</option>
+                    <option value="crate">Priority Air Cargo Crate</option>
+                    <option value="cryo">Cryo Biopharmaceutical Vault</option>
+                    <option value="wafer">3nm Cleanroom Microchip Carton</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Sender & Receiver Details -->
+          <div class="form-row-2" style="margin-top: 1.5rem;">
+            <!-- Sender Card -->
+            <div class="form-subcard sender-subcard">
+              <h4 class="subcard-title">Shipper / Sender Information</h4>
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label" for="senderName">Sender Full Name / Enterprise *</label>
+                <input type="text" id="senderName" class="form-control" placeholder="e.g. Tesla Gigafactory Logistics" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="senderAddress">Sender Full Address & Facility *</label>
+                <textarea id="senderAddress" class="form-control" rows="2" placeholder="e.g. 1 Tesla Rd, Austin, TX 78725, USA" required></textarea>
+              </div>
+            </div>
+
+            <!-- Receiver Card -->
+            <div class="form-subcard receiver-subcard">
+              <h4 class="subcard-title">Consignee / Receiver Information</h4>
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label" for="receiverName">Receiver Full Name / Enterprise *</label>
+                <input type="text" id="receiverName" class="form-control" placeholder="e.g. Siemens Energy AG Berlin" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="receiverAddress">Receiver Full Address & Destination *</label>
+                <textarea id="receiverAddress" class="form-control" rows="2" placeholder="e.g. Huttenstraße 12, 10553 Berlin, Germany" required></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 4: Origin, Destination, Current Status, Current Location -->
+          <div class="form-row-2" style="margin-top: 1.25rem;">
+            <div class="form-group">
+              <label class="form-label" for="shipmentOrigin">Origin (City / Hub / Airport) *</label>
+              <input 
+                type="text" 
+                id="shipmentOrigin" 
+                class="form-control" 
+                placeholder="e.g. Austin (AUS)" 
+                oninput="triggerAutoRouteGeneration()"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="shipmentDest">Destination (City / Hub / Airport) *</label>
+              <input 
+                type="text" 
+                id="shipmentDest" 
+                class="form-control" 
+                placeholder="e.g. Berlin (BER)" 
+                oninput="triggerAutoRouteGeneration()"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="form-row-2" style="margin-top: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="currentStatus">Current Status *</label>
+              <select id="currentStatus" class="form-select" onchange="syncActiveCheckpointStatus()">
+                <option value="Order Processed">Order Processed</option>
+                <option value="Collected / In Transit" selected>Collected / In Transit</option>
+                <option value="Airborne Flight Transit">Airborne Flight Transit</option>
+                <option value="Customs Clearance">Customs Clearance</option>
+                <option value="Arrived at Hub">Arrived at Hub</option>
+                <option value="Out for Delivery">Out for Delivery</option>
+                <option value="Delivered">Delivered</option>
+                <option value="On Hold / Exception">On Hold / Exception</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="currentLocation">Current Location *</label>
+              <input 
+                type="text" 
+                id="currentLocation" 
+                class="form-control" 
+                placeholder="e.g. Frankfurt SuperHub Ramp 4" 
+                required
+              >
+            </div>
+          </div>
+
+          <div class="form-row-2" style="margin-top: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="estimatedEta">Calculated Delivery ETA</label>
+              <input type="text" id="estimatedEta" class="form-control" placeholder="e.g. Tomorrow, 14:30 CET" value="Tomorrow, 15:00 CET">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="cargoTemp">Telemetry - Cargo Bay Temperature</label>
+              <input type="text" id="cargoTemp" class="form-control" placeholder="e.g. +4.2°C (Optimal)" value="+18.2°C (Monitored Ambient)">
+            </div>
+          </div>
+
+          <!-- SECTION: AUTOMATIC ROUTE GENERATOR WITH 'OTHERS' FIELD -->
+          <div class="route-generator-container" style="margin-top: 2rem;">
+            <div class="route-gen-header">
+              <div>
+                <span class="gen-pill">DYNAMIC FLIGHT ROUTING</span>
+                <h3 class="gen-title">Configured Route Checkpoints</h3>
+                <p class="gen-sub">Automatically generated when typing Origin and Destination. Add custom stopovers using the 'Others' input.</p>
+              </div>
+              <button type="button" class="btn btn-outline-light btn-xs" onclick="regenerateDefaultRoutes()">
+                Reset Default Checkpoints
+              </button>
+            </div>
+
+            <!-- 'OTHERS' INPUT FIELD -->
+            <div class="others-custom-box">
+              <label class="form-label" for="othersLocationInput">
+                'Others' Custom Location / Special Checkpoint
+              </label>
+              <div class="search-input-group">
+                <input 
+                  type="text" 
+                  id="othersLocationInput" 
+                  class="form-control" 
+                  placeholder="e.g. Bonded Cold-Vault Refill at Zurich (ZRH) or Special Diplomatic Transfer..."
+                >
+                <button type="button" class="btn btn-primary btn-sm speed-btn" onclick="addCustomCheckpoint()">
+                  <span>+ Add Custom Checkpoint</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Generated Route Checkpoints List -->
+            <div class="checkpoints-table-wrap">
+              <div class="checkpoints-list" id="checkpointsList">
+                <!-- Dynamically populated -->
+              </div>
+              <div class="add-checkpoint-bottom-bar" style="margin-top: 1.25rem;">
+                <button type="button" class="btn btn-outline-light btn-block add-checkpoint-btn" onclick="addNewBlankCheckpoint()">
+                  + Add New Checkpoint
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="form-submit-row" style="margin-top: 2.5rem;">
+            <button type="submit" class="btn btn-primary btn-lg speed-btn">
+              <span>Dispatch & Save Consignment</span>
+              <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button type="reset" class="btn btn-outline-light btn-lg" onclick="resetFormState()">
+              Clear Form
+            </button>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- SECTION 2: ACTIVE CONSIGNMENTS TABLE -->
+      <section class="admin-section-card" style="margin-top: 3rem;">
+        <div class="card-title-bar">
+          <div>
+            <span class="section-badge"><span class="badge-red-slash">//</span> TELEMATICS DATABASE</span>
+            <h2 class="admin-card-heading">Active Consignments Repository</h2>
+            <p class="admin-card-sub">All live and historical shipments registered in Supabase PostgreSQL database and local storage.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline-light btn-sm" onclick="syncAllToCloud()" title="Push all local & sample manifests to Supabase">
+              &#9729; Push All to Cloud
+            </button>
+            <button type="button" class="btn btn-outline-light btn-sm" onclick="loadConsignmentsTable()">
+              Refresh Records
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Package</th>
+                <th>AWB Code</th>
+                <th>Route</th>
+                <th>Parties (Sender &rarr; Receiver)</th>
+                <th>Current Status</th>
+                <th>Current Location</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="consignmentsTableBody">
+              <tr>
+                <td colspan="7" class="text-center" style="padding: 2rem;">Loading registered manifests...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Supabase Cloud Database SDK & Integration -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js?v=20260905-clean"></script>
+
+  <script>
+    // State
+    let currentRoutes = [];
+    let currentUploadedPicture = '';
+
+    // Preset Pictures (High quality SVG data URIs)
+    const PRESET_PICS = {
+      crate: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300' width='100%25' height='100%25'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230B192F'/%3E%3Cstop offset='100%25' stop-color='%23050B14'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' fill='url(%23bg)'/%3E%3Cg transform='translate(60, 40)'%3E%3Cpath d='M140 30 L260 90 L140 150 L20 90 Z' fill='%23C29362' stroke='%238C6239' stroke-width='2'/%3E%3Cpath d='M20 90 L140 150 L140 230 L20 170 Z' fill='%239E6F40' stroke='%23704B26' stroke-width='2'/%3E%3Cpath d='M140 150 L260 90 L260 170 L140 230 Z' fill='%2380552C' stroke='%235E3B1B' stroke-width='2'/%3E%3Cpath d='M130 35 L150 45 L150 225 L130 215 Z' fill='%23D90429' opacity='0.85'/%3E%3Crect x='35' y='110' width='80' height='45' rx='3' fill='%23FFFFFF' transform='skewY(22)'/%3E%3Ctext x='42' y='125' font-family='Arial, sans-serif' font-size='9' font-weight='bold' fill='%230B192F' transform='skewY(22)'%3EAERO EXPRESS%3C/text%3E%3Ctext x='42' y='138' font-family='monospace' font-size='8' font-weight='bold' fill='%23D90429' transform='skewY(22)'%3EPRIORITY CARGO%3C/text%3E%3C/g%3E%3Ctext x='200' y='285' text-anchor='middle' font-family='Arial, sans-serif' font-size='12' font-weight='bold' fill='%23E2E8F0'%3EAERO PRIORITY AIR VAULT CRATE%3C/text%3E%3C/svg%3E",
+      cryo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300' width='100%25' height='100%25'%3E%3Cdefs%3E%3ClinearGradient id='bg2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2307101F'/%3E%3Cstop offset='100%25' stop-color='%2302050A'/%3E%3C/linearGradient%3E%3ClinearGradient id='cylGrad' x1='0%25' y1='0%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%23E2E8F0'/%3E%3Cstop offset='50%25' stop-color='%23FFFFFF'/%3E%3Cstop offset='100%25' stop-color='%2394A3B8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' fill='url(%23bg2)'/%3E%3Cg transform='translate(130, 45)'%3E%3Cpath d='M20 70 C20 40, 120 40, 120 70 L120 190 C120 220, 20 220, 20 190 Z' fill='url(%23cylGrad)' stroke='%2364748B' stroke-width='2'/%3E%3Cellipse cx='70' cy='70' rx='50' ry='20' fill='%23F1F5F9' stroke='%2364748B' stroke-width='2'/%3E%3Cellipse cx='70' cy='70' rx='35' ry='12' fill='%23D90429'/%3E%3Crect x='35' y='110' width='70' height='45' fill='%230B192F' rx='2'/%3E%3Ctext x='42' y='124' font-family='Arial, sans-serif' font-size='8' font-weight='bold' fill='%2338BDF8'%3EAERO CRYO-VAULT%3C/text%3E%3Ctext x='42' y='136' font-family='monospace' font-size='8' fill='%23FFFFFF'%3E-78.4°C SEALED%3C/text%3E%3Ctext x='20' y='170' width='100' height='6' fill='%23D90429'/%3E%3C/g%3E%3Ctext x='200' y='280' text-anchor='middle' font-family='Arial, sans-serif' font-size='12' font-weight='bold' fill='%23E2E8F0'%3EAERO VAULT™ CRYO-BIOLOGIC SHIPPER%3C/text%3E%3C/svg%3E",
+      wafer: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300' width='100%25' height='100%25'%3E%3Cdefs%3E%3ClinearGradient id='bg3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230F223D'/%3E%3Cstop offset='100%25' stop-color='%23050B14'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' fill='url(%23bg3)'/%3E%3Cg transform='translate(75, 55)'%3E%3Crect x='10' y='20' width='230' height='160' rx='8' fill='%23162844' stroke='%2338BDF8' stroke-width='2'/%3E%3Crect x='25' y='35' width='200' height='130' rx='4' fill='%230B172A' stroke='%231D3A63'/%3E%3Ccircle cx='125' cy='100' r='45' fill='none' stroke='%2338BDF8' stroke-width='1.5' stroke-dasharray='4 2'/%3E%3Ccircle cx='125' cy='100' r='35' fill='%231E3A8A' opacity='0.7'/%3E%3Cpolygon points='125,75 145,115 105,115' fill='%23D90429'/%3E%3Ctext x='125' y='110' text-anchor='middle' font-family='Arial, sans-serif' font-size='9' font-weight='bold' fill='%23FFFFFF'%3E3nm WAFER%3C/text%3E%3Crect x='10' y='20' width='230' height='20' fill='%23D90429' rx='4'/%3E%3C/g%3E%3Ctext x='200' y='275' text-anchor='middle' font-family='Arial, sans-serif' font-size='12' font-weight='bold' fill='%23E2E8F0'%3EAERO SECURE SEMICONDUCTOR SHIELD%3C/text%3E%3C/svg%3E"
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set admin email in header if available
+      const user = sessionStorage.getItem('aero_admin_user');
+      if (user) document.getElementById('adminUserDisplay').textContent = user;
+
+      // Initialize default code and routes
+      generateTrackingCode();
+      applyPresetPhoto('crate');
+      triggerAutoRouteGeneration();
+
+      // Load active consignments table
+      loadConsignmentsTable();
+    });
+
+    function handleLogout() {
+      sessionStorage.removeItem('aero_admin_auth');
+      sessionStorage.removeItem('aero_admin_user');
+      window.location.href = 'index.html';
+    }
+
+    // Auto-Generate realistic AWB code
+    function generateTrackingCode() {
+      const prefixes = ['ORD', 'DXB', 'FRA', 'JFK', 'SIN', 'HKG', 'LHR', 'HND', 'NRT'];
+      const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+      const num = Math.floor(1000 + Math.random() * 9000);
+      const code = `AE-${num}-${prefix}`;
+      document.getElementById('shipmentCode').value = code;
+    }
+
+    // Image Upload Handling (File -> Base64)
+    function handleImageFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        currentUploadedPicture = e.target.result;
+        displayPreviewImage(currentUploadedPicture);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function applyPresetPhoto(type) {
+      if (PRESET_PICS[type]) {
+        currentUploadedPicture = PRESET_PICS[type];
+        displayPreviewImage(currentUploadedPicture);
+      }
+    }
+
+    function displayPreviewImage(src) {
+      const img = document.getElementById('packagePreviewImg');
+      const placeholder = document.getElementById('noPreviewText');
+      img.src = src;
+      img.style.display = 'block';
+      placeholder.style.display = 'none';
+    }
+
+    // Dynamic Route Generator
+    function triggerAutoRouteGeneration() {
+      const origin = document.getElementById('shipmentOrigin').value.trim() || 'Origin Hub';
+      const dest = document.getElementById('shipmentDest').value.trim() || 'Destination Gateway';
+
+      // Keep any custom 'Others' checkpoints already added
+      const customCheckpoints = currentRoutes.filter(r => r.isCustom);
+
+      const defaultRoutes = [
+        {
+          name: 'Origin Collection',
+          location: `${origin} Dispatch Vault`,
+          status: 'completed',
+          time: 'Day 1 • 08:30 Local',
+          desc: `Picked up by Aero Express armed courier at ${origin} facility`,
+          isCustom: false
+        },
+        {
+          name: 'Export Customs Clearance',
+          location: `${origin} Air Cargo Center`,
+          status: 'completed',
+          time: 'Day 1 • 11:45 Local',
+          desc: `Airway bill manifested and sealed into priority ULD container`,
+          isCustom: false
+        },
+        {
+          name: 'International Air Hub Transit',
+          location: `Transcontinental Flight Corridor`,
+          status: 'active',
+          time: 'Day 1 • 14:15 Local',
+          desc: `Freighter airborne at cruising flight corridor. Satellite telemetry operational`,
+          isCustom: false
+        },
+        // Insert custom checkpoints here if any
+        ...customCheckpoints,
+        {
+          name: 'Destination Hub Ingress',
+          location: `${dest} Cargo SuperHub`,
+          status: 'pending',
+          time: 'Day 2 • 06:30 Local',
+          desc: `Fast-track customs pre-clearance and express ramp unloading`,
+          isCustom: false
+        },
+        {
+          name: 'Final Handshake Delivery',
+          location: `${dest} Receiving Dock`,
+          status: 'pending',
+          time: 'Day 2 • 11:00 Local',
+          desc: `Biometric sign-off and physical handover to designated recipient`,
+          isCustom: false
+        }
+      ];
+
+      currentRoutes = defaultRoutes;
+      renderRouteCheckpointsList();
+    }
+
+    function regenerateDefaultRoutes() {
+      currentRoutes = [];
+      triggerAutoRouteGeneration();
+    }
+
+    // Add Custom Checkpoint ('Others' field)
+    function addCustomCheckpoint() {
+      const othersInput = document.getElementById('othersLocationInput');
+      const customLoc = othersInput.value.trim();
+      if (!customLoc) {
+        alert('Please enter a location or milestone in the Others box before adding.');
+        return;
+      }
+
+      const newCheckpoint = {
+        name: `Special Stopover / Custom Ingress`,
+        location: customLoc,
+        status: 'active',
+        time: 'Intermediate Transit',
+        desc: `Custom transit inspection and bonded handling recorded at ${customLoc}`,
+        isCustom: true
+      };
+
+      // Insert before Destination Hub
+      const destIndex = currentRoutes.findIndex(r => r.name.includes('Destination Hub'));
+      if (destIndex >= 0) {
+        currentRoutes.splice(destIndex, 0, newCheckpoint);
+      } else {
+        currentRoutes.push(newCheckpoint);
+      }
+
+      othersInput.value = '';
+      renderRouteCheckpointsList();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function addNewBlankCheckpoint() {
+      const now = new Date();
+      const timeStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ' • ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' Local';
+      currentRoutes.push({
+        name: '',
+        location: '',
+        time: timeStr,
+        status: 'pending',
+        desc: '',
+        isCustom: true
+      });
+      renderRouteCheckpointsList();
+    }
+
+    function removeCheckpoint(index) {
+      currentRoutes.splice(index, 1);
+      renderRouteCheckpointsList();
+    }
+
+    function updateCheckpointField(index, field, value) {
+      if (currentRoutes[index]) {
+        currentRoutes[index][field] = value;
+      }
+    }
+
+    function renderRouteCheckpointsList() {
+      const container = document.getElementById('checkpointsList');
+      if (!container) return;
+
+      if (currentRoutes.length === 0) {
+        container.innerHTML = '<p class="text-dim" style="padding: 1rem; text-align: center;">No checkpoints configured. Click "+ Add New Checkpoint" below to add one.</p>';
+        return;
+      }
+
+      container.innerHTML = currentRoutes.map((r, index) => {
+        return `
+          <div class="checkpoint-editable-row ${r.isCustom ? 'custom-checkpoint' : ''}">
+            <div class="cp-row-header">
+              <span class="cp-row-index">Checkpoint #${index + 1}</span>
+              ${r.isCustom ? '<span class="custom-tag">CUSTOM LINE</span>' : '<span class="standard-tag">STANDARD ROUTE</span>'}
+              <button type="button" class="cp-del-btn" onclick="removeCheckpoint(${index})" title="Delete this checkpoint">&times;</button>
+            </div>
+            
+            <div class="cp-inputs-grid">
+              <div class="cp-input-group">
+                <label class="cp-input-label">Checkpoint Name</label>
+                <input 
+                  type="text" 
+                  class="form-control form-control-sm cp-field" 
+                  value="${escapeHtml(r.name || '')}" 
+                  placeholder="e.g. Arrived at Local Post Office..." 
+                  oninput="updateCheckpointField(${index}, 'name', this.value)"
+                >
+              </div>
+
+              <div class="cp-input-group">
+                <label class="cp-input-label">Location / Gateway</label>
+                <input 
+                  type="text" 
+                  class="form-control form-control-sm cp-field" 
+                  value="${escapeHtml(r.location || '')}" 
+                  placeholder="e.g. Frankfurt Air Cargo Gate 4" 
+                  oninput="updateCheckpointField(${index}, 'location', this.value)"
+                >
+              </div>
+
+              <div class="cp-input-group">
+                <label class="cp-input-label">Timestamp</label>
+                <input 
+                  type="text" 
+                  class="form-control form-control-sm cp-field" 
+                  value="${escapeHtml(r.time || '')}" 
+                  placeholder="e.g. 04 Sep • 14:30 CET" 
+                  oninput="updateCheckpointField(${index}, 'time', this.value)"
+                >
+              </div>
+
+              <div class="cp-input-group">
+                <label class="cp-input-label">Status</label>
+                <select class="form-select form-select-sm cp-status-select" onchange="updateCheckpointField(${index}, 'status', this.value)">
+                  <option value="completed" ${r.status === 'completed' ? 'selected' : ''}>&#10003; Completed</option>
+                  <option value="active" ${r.status === 'active' ? 'selected' : ''}>&bull; Active Now</option>
+                  <option value="pending" ${r.status === 'pending' ? 'selected' : ''}>- Pending</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="cp-desc-group" style="margin-top: 0.5rem;">
+              <label class="cp-input-label">Description / Custody Details</label>
+              <input 
+                type="text" 
+                class="form-control form-control-sm cp-field" 
+                value="${escapeHtml(r.desc || '')}" 
+                placeholder="Description of milestone (e.g. Biometric handoff completed, sorted into van)..." 
+                oninput="updateCheckpointField(${index}, 'desc', this.value)"
+              >
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Sync status dropdown with checkpoints
+    function syncActiveCheckpointStatus() {
+      const status = document.getElementById('currentStatus').value;
+      if (status.includes('Delivered')) {
+        currentRoutes.forEach(r => r.status = 'completed');
+      } else if (status.includes('Processed')) {
+        currentRoutes.forEach((r, idx) => r.status = idx === 0 ? 'active' : 'pending');
+      }
+      renderRouteCheckpointsList();
+    }
+
+    // Submit New Shipment Form -> POST to /api/shipments
+    async function submitNewShipment() {
+      const code = document.getElementById('shipmentCode').value.trim().toUpperCase();
+      const packageName = (document.getElementById('packageName')?.value || '').trim();
+      const senderName = document.getElementById('senderName').value.trim();
+      const senderAddress = document.getElementById('senderAddress').value.trim();
+      const receiverName = document.getElementById('receiverName').value.trim();
+      const receiverAddress = document.getElementById('receiverAddress').value.trim();
+      const origin = document.getElementById('shipmentOrigin').value.trim();
+      const destination = document.getElementById('shipmentDest').value.trim();
+      const status = document.getElementById('currentStatus').value;
+      const currentLocation = document.getElementById('currentLocation').value.trim();
+      const serviceType = document.getElementById('serviceType').value;
+      const eta = document.getElementById('estimatedEta').value.trim();
+      const temp = document.getElementById('cargoTemp').value.trim();
+
+      const newShipment = {
+        code,
+        package_name: packageName,
+        packageName: packageName,
+        title: packageName,
+        picture: currentUploadedPicture || PRESET_PICS.crate,
+        senderName,
+        senderAddress,
+        receiverName,
+        receiverAddress,
+        origin,
+        destination,
+        status,
+        currentLocation,
+        serviceType,
+        eta,
+        createdAt: new Date().toLocaleString(),
+        routes: currentRoutes,
+        telemetry: {
+          temp: temp || '+18.0°C (Monitored)',
+          seal: 'Biometric Crypt-Lock [VERIFIED]',
+          gps: 'Iridium Satellite GPS [99.8% Sync]',
+          gforce: '0.10 G (Normal)'
+        }
+      };
+
+      // 1. Permanently persist to Supabase Cloud Database & LocalStorage via AeroDB
+      let savedStorage = 'local';
+      try {
+        const dbResult = await AeroDB.saveShipment(newShipment);
+        if (dbResult && dbResult.storage === 'supabase') {
+          savedStorage = 'supabase';
+          console.log('[AERO DISPATCH] Consignment permanently saved to Supabase PostgreSQL database.');
+        }
+      } catch (dbErr) {
+        console.warn('[AERO DISPATCH] Supabase save notice:', dbErr);
+      }
+
+      // 2. Secondary dispatch to local server if running
+      try {
+        fetch('/api/shipments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newShipment)
+        }).catch(() => {});
+      } catch (err) {}
+
+      // 3. Show Toast Notification with storage confirmation
+      const toast = document.getElementById('actionToast');
+      document.getElementById('toastTitle').textContent = (savedStorage === 'supabase')
+        ? `Consignment ${code} Saved to Supabase Cloud!`
+        : `Consignment ${code} Saved & Dispatched`;
+      document.getElementById('toastDesc').textContent = (savedStorage === 'supabase')
+        ? `${origin} → ${destination} | Permanently recorded in PostgreSQL database. Live globally.`
+        : `${origin} → ${destination} | Status: ${status} | Checkpoints: ${currentRoutes.length}`;
+      const toastLink = document.getElementById('toastTrackLink');
+      toastLink.href = `tracking-details.html?code=${encodeURIComponent(code)}`;
+      toast.style.display = 'flex';
+      toast.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // 4. Refresh table
+      loadConsignmentsTable();
+    }
+
+    // Load Consignments Table from Supabase / Fallbacks
+    async function loadConsignmentsTable() {
+      const tbody = document.getElementById('consignmentsTableBody');
+      let shipments = [];
+
+      try {
+        shipments = await AeroDB.getAllShipments();
+      } catch (err) {
+        console.warn('AeroDB load failed, reading fallback storage:', err);
+        shipments = JSON.parse(localStorage.getItem('aero_shipments') || '[]');
+      }
+
+      if (!shipments || shipments.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center" style="padding: 2rem;">No shipments recorded yet.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = shipments.map(s => {
+        const pic = s.picture || PRESET_PICS.crate;
+        return `
+          <tr>
+            <td>
+              <div class="table-img-thumb">
+                <img src="${pic}" alt="${s.code}">
+              </div>
+            </td>
+            <td>
+              <strong class="font-mono text-red" style="font-size: 0.95rem;">${s.code}</strong>
+              <div style="font-size: 0.72rem; color: var(--text-dim);">${s.package_name || s.packageName || s.serviceType || 'Priority Air'}</div>
+            </td>
+            <td>
+              <strong>${s.origin || 'Origin'}</strong> &rarr; <strong>${s.destination || 'Dest'}</strong>
+              <div style="font-size: 0.72rem; color: var(--text-dim);">${s.routes ? s.routes.length + ' Checkpoints' : ''}</div>
+            </td>
+            <td>
+              <div style="font-size: 0.8rem;">
+                <div><span class="text-dim">From:</span> <strong>${s.senderName || 'Shipper'}</strong></div>
+                <div><span class="text-dim">To:</span> <strong>${s.receiverName || 'Consignee'}</strong></div>
+              </div>
+            </td>
+            <td>
+              <span class="status-pill in-flight" style="font-size: 0.68rem; padding: 0.2rem 0.5rem;">
+                ${s.status || 'In Transit'}
+              </span>
+            </td>
+            <td>
+              <div style="font-size: 0.8rem; max-width: 180px;">${s.currentLocation || 'In Transit'}</div>
+            </td>
+            <td>
+              <div style="display: flex; gap: 0.4rem; align-items: center;">
+                <a href="admin-edit.html?code=${encodeURIComponent(s.code)}" class="btn btn-xs btn-primary speed-btn" title="Edit Timeline & Checkpoints">
+                  <span>Edit Timeline</span>
+                </a>
+                <a href="tracking-details.html?code=${encodeURIComponent(s.code)}" target="_blank" class="btn btn-xs btn-outline-light" title="View Public Tracking Page">
+                  Track &nearr;
+                </a>
+                <button type="button" class="btn btn-xs btn-outline-light text-red" onclick="deleteShipmentRecord('${s.code}')" title="Delete Record">
+                  &times;
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+
+
+    // Push local manifests to Supabase
+    async function syncAllToCloud() {
+      if (!AeroDB.isConfigured()) {
+        alert('Please connect your Supabase database first in Account Settings.');
+        window.location.href = 'admin-settings.html';
+        return;
+      }
+      const btn = event?.target;
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Syncing to Cloud...';
+      }
+      try {
+        const count = await AeroDB.syncLocalToCloud();
+        alert(`Successfully synced ${count} consignment(s) to Supabase PostgreSQL database!`);
+        await loadConsignmentsTable();
+      } catch (err) {
+        alert('Failed to sync to Supabase: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '&#9729; Push All to Cloud';
+        }
+      }
+    }
+
+    // Delete shipment record permanently
+    async function deleteShipmentRecord(code) {
+      if (!confirm(`Are you sure you want to delete consignment ${code}?`)) return;
+
+      try {
+        await AeroDB.deleteShipment(code);
+      } catch (e) {
+        console.warn('AeroDB delete notice:', e);
+      }
+
+      try {
+        await fetch(`/api/shipments/${encodeURIComponent(code)}`, { method: 'DELETE' });
+      } catch (e) {}
+
+      loadConsignmentsTable();
+    }
+
+    // Demo auto-fill helper
+    function autoPopulateFormDemo() {
+      generateTrackingCode();
+      if (document.getElementById('packageName')) {
+        document.getElementById('packageName').value = 'Starlink Direct-to-Cell Spacecraft Transponders';
+      }
+      document.getElementById('senderName').value = 'SpaceX Starlink Launch Facility';
+      document.getElementById('senderAddress').value = 'Rocket Road, Hawthorne, CA 90250, USA';
+      document.getElementById('receiverName').value = 'ESA Deep Space Ground Station';
+      document.getElementById('receiverAddress').value = 'Kourou Spaceport Gateway, French Guiana';
+      document.getElementById('shipmentOrigin').value = 'Los Angeles (LAX)';
+      document.getElementById('shipmentDest').value = 'Cayenne / Kourou (CAY)';
+      document.getElementById('currentStatus').value = 'Collected / In Transit';
+      document.getElementById('currentLocation').value = 'Los Angeles LAX Cargo Tarmac Gate 42';
+      document.getElementById('estimatedEta').value = 'In 24 Hours';
+      document.getElementById('cargoTemp').value = '+21.0°C (Pressurized Cryo Chamber)';
+      applyPresetPhoto('wafer');
+      triggerAutoRouteGeneration();
+    }
+
+    function resetFormState() {
+      generateTrackingCode();
+      if (document.getElementById('packageName')) {
+        document.getElementById('packageName').value = '';
+      }
+      applyPresetPhoto('crate');
+      triggerAutoRouteGeneration();
+    }
+
+    async function loadAdminProfile() {
+      try {
+        const res = await fetch('/api/admin/info');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.email) {
+            document.getElementById('adminUserDisplay').textContent = data.email;
+            sessionStorage.setItem('aero_admin_user', data.email);
+          }
+        }
+      } catch (err) {
+        const stored = localStorage.getItem('aero_admin_email');
+        if (stored) document.getElementById('adminUserDisplay').textContent = stored;
+      }
+    }
+    loadAdminProfile();
+  </script>
+</body>
+</html>
