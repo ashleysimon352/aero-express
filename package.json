@@ -2,11 +2,9 @@
   "name": "aero-express-logistics",
   "version": "1.0.0",
   "description": "Aero Express Global Logistics & Air Dispatch Portal",
-  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
     "dev": "node server.js",
-    "build": "echo 'Build complete'"
+    "build": "echo 'Frontend static assets ready'"
   },
   "engines": {
     "node": ">=20.x"

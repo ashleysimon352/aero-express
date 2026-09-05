@@ -15,14 +15,16 @@ const AeroDB = {
   // Retrieve credentials / endpoints
   getConfig() {
     return {
-      url: localStorage.getItem('aero_api_url') || API_BASE_URL,
+      url: (typeof localStorage !== 'undefined' ? localStorage.getItem('aero_api_url') : null) || API_BASE_URL,
       key: 'neon_serverless_ready'
     };
   },
 
   // Save configuration
   setConfig(url, key) {
-    if (url) localStorage.setItem('aero_api_url', url.trim());
+    if (typeof localStorage !== 'undefined' && url) {
+      localStorage.setItem('aero_api_url', url.trim());
+    }
     this._client = null;
   },
 

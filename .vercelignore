@@ -1,0 +1,7 @@
+# Local development servers and non-production files
+server.js
+server.py
+supabase_setup.sql
+data/shipments.json.bak*
+.vscode/
+.idea/

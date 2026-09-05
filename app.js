@@ -253,18 +253,21 @@ const TRACKING_DB = {
   }
 };
 
-// DOM Content Loaded Handler
-document.addEventListener('DOMContentLoaded', () => {
-  initTabs();
-  initMobileMenu();
-  initRateCalculator();
-  initScrollSpy();
-});
+// DOM Content Loaded Handler (Browser Only)
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initTabs();
+    initMobileMenu();
+    initRateCalculator();
+    initScrollSpy();
+  });
+}
 
 /* ==========================================================================
    WIDGET TABS CONTROLLER
    ========================================================================== */
 function initTabs() {
+  if (typeof document === 'undefined') return;
   const tabs = document.querySelectorAll('.widget-tab');
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
@@ -275,6 +278,7 @@ function initTabs() {
 }
 
 function activateTab(tabId) {
+  if (typeof document === 'undefined') return;
   const tabs = document.querySelectorAll('.widget-tab');
   const panes = document.querySelectorAll('.tab-pane');
 
@@ -290,23 +294,33 @@ function activateTab(tabId) {
 }
 
 // Global helper for footer or links
-window.switchHeroTab = function(tabId) {
+function switchHeroTab(tabId) {
+  if (typeof document === 'undefined') return;
   activateTab(tabId);
   const widget = document.getElementById('widget-card');
   if (widget) {
     widget.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-};
+}
+if (typeof window !== 'undefined') {
+  window.switchHeroTab = switchHeroTab;
+}
 
 /* ==========================================================================
    TRACKING CONTROLLER (FULL PAGE REDIRECT)
    ========================================================================== */
-window.handleTrackingSearch = function() {
+function handleTrackingSearch() {
+  if (typeof document === 'undefined') return;
   const input = document.getElementById('trackInput');
   const query = input ? input.value.trim().toUpperCase() : '';
   if (!query) return;
-  window.location.href = 'tracking-details.html?code=' + encodeURIComponent(query);
-};
+  if (typeof window !== 'undefined') {
+    window.location.href = 'tracking-details.html?code=' + encodeURIComponent(query);
+  }
+}
+if (typeof window !== 'undefined') {
+  window.handleTrackingSearch = handleTrackingSearch;
+}
 
 function generateDynamicShipment(awbCode) {
   return {
@@ -368,6 +382,7 @@ function generateDynamicShipment(awbCode) {
 }
 
 function renderTrackingData(data) {
+  if (typeof document === 'undefined') return;
   // Update Hero Preview Widget
   const previewAwb = document.getElementById('previewAwb');
   const previewStatus = document.getElementById('previewStatus');
@@ -444,7 +459,8 @@ function renderTrackingData(data) {
 }
 
 // Smooth scroll to tracking section and glow
-window.scrollToTrackingDetails = function() {
+function scrollToTrackingDetails() {
+  if (typeof document === 'undefined') return;
   const trackSection = document.getElementById('track');
   if (trackSection) {
     trackSection.scrollIntoView({ behavior: 'smooth' });
@@ -456,12 +472,16 @@ window.scrollToTrackingDetails = function() {
       }, 1500);
     }
   }
-};
+}
+if (typeof window !== 'undefined') {
+  window.scrollToTrackingDetails = scrollToTrackingDetails;
+}
 
 /* ==========================================================================
    INSTANT RATE ESTIMATE CALCULATOR
    ========================================================================== */
 function initRateCalculator() {
+  if (typeof document === 'undefined') return;
   calculateInstantRate(); // Initial calculation
 
   const calcWeight = document.getElementById('calcWeight');
@@ -475,7 +495,8 @@ function initRateCalculator() {
   if (calcService) calcService.addEventListener('change', calculateInstantRate);
 }
 
-window.calculateInstantRate = function() {
+function calculateInstantRate() {
+  if (typeof document === 'undefined') return;
   const origin = document.getElementById('calcOrigin')?.value || 'FRA';
   const dest = document.getElementById('calcDest')?.value || 'SIN';
   const service = document.getElementById('calcService')?.value || 'nfo';
@@ -521,12 +542,16 @@ window.calculateInstantRate = function() {
   if (estPrice) {
     estPrice.textContent = `$${calculatedTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
-};
+}
+if (typeof window !== 'undefined') {
+  window.calculateInstantRate = calculateInstantRate;
+}
 
 /* ==========================================================================
    MOBILE NAVIGATION DRAWER
    ========================================================================== */
 function initMobileMenu() {
+  if (typeof document === 'undefined') return;
   const menuToggle = document.getElementById('menuToggle');
   const navMenu = document.getElementById('navMenu');
 
@@ -551,6 +576,7 @@ function initMobileMenu() {
    SCROLL SPY & NAVBAR ACTIVE STATE
    ========================================================================== */
 function initScrollSpy() {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return;
   const sections = document.querySelectorAll('header, section[id]');
   const navLinks = document.querySelectorAll('.nav-link');
 
@@ -581,7 +607,31 @@ function initScrollSpy() {
 /* ==========================================================================
    DOWNLOAD E-WAYBILL DEMO ACTION
    ========================================================================== */
-window.printManifest = function() {
+function printManifest() {
+  if (typeof document === 'undefined') return;
   const activeAwb = document.getElementById('activeAwbDisplay')?.textContent || 'AE-8849-DXB';
-  alert(`[AERO CRYPTO-VAULT] Generating official cryptographic Air Waybill (e-AWB) for manifest ${activeAwb}...\n\nVerification: SHA-256 IATA Compliant\nDigital Bill of Lading ready.`);
-};
+  if (typeof alert !== 'undefined') {
+    alert(`[AERO CRYPTO-VAULT] Generating official cryptographic Air Waybill (e-AWB) for manifest ${activeAwb}...\n\nVerification: SHA-256 IATA Compliant\nDigital Bill of Lading ready.`);
+  }
+}
+if (typeof window !== 'undefined') {
+  window.printManifest = printManifest;
+}
+
+// Node.js Serverless Fallback Export
+// If Vercel accidentally executes app.js as a Serverless Function instead of serving statically,
+// this safely responds with 200 OK and serves the JavaScript contents.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = (req, res) => {
+    const fs = require('fs');
+    try {
+      const content = fs.readFileSync(__filename, 'utf-8');
+      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      res.status(200).send(content);
+    } catch (e) {
+      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      res.status(200).send('// Aero Express Logistics Client Script');
+    }
+  };
+}
