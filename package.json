@@ -2,14 +2,16 @@
   "name": "aero-express-logistics",
   "version": "1.0.0",
   "description": "Aero Express Global Logistics & Air Dispatch Portal",
+  "main": "server.js",
   "scripts": {
-    "dev": "node server.js",
-    "build": "echo 'Frontend static assets ready'"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "engines": {
-    "node": "20.x"
+    "node": ">=20.0.0"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.1.0"
+    "@neondatabase/serverless": "^1.1.0",
+    "dotenv": "^16.4.7"
   }
 }
