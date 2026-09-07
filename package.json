@@ -4,6 +4,7 @@
   "description": "Aero Express Global Logistics & Air Dispatch Portal",
   "main": "server.js",
   "scripts": {
+    "build": "echo 'Cloudflare Pages static build ready'",
     "start": "node server.js",
     "dev": "node server.js"
   },

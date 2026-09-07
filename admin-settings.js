@@ -360,7 +360,7 @@ async function initSupabaseSettingsUI() {
 }
 
 async function saveSupabaseSettings() {
-  showToast('Database Managed', 'Neon Postgres is managed securely via Vercel Serverless Functions (/api/shipments).');
+  showToast('Database Managed', 'Neon Postgres is managed securely via Cloudflare Pages Functions (/api/shipments).');
 }
 
 /**
